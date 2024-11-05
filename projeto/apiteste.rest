@@ -1,0 +1,3 @@
+##extensão VSCode utilizada "REST CLIENT"
+
+GET  https://faccamp.pythonanywhere.com/wlist/get

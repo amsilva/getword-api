@@ -35,7 +35,7 @@ def add_palavra(complexidade, categoria, palavra):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO dicionario (complexidade, categoria, palavra) VALUES (?, ?, ?)",
-                   (complexidade, categoria, palavra))
+                   (complexidade, categoria.upper(), palavra.upper()))
     conn.commit()
     conn.close()
 
@@ -55,7 +55,7 @@ def crud():
         palavra = request.form['palavra']
         
         # Adiciona a nova palavra no banco de dados
-        add_palavra(complexidade.upper(), categoria.upper(), palavra.upper())
+        add_palavra(complexidade, categoria, palavra)
         return redirect(url_for('crud'))  # Redireciona para a mesma página após o POST
     
     # Quando for GET, exibe os dados no banco de dados
@@ -66,6 +66,12 @@ def crud():
 @app.route('/wlist/remove/<int:id>')
 def remove(id):
     remove_palavra(id)
+    return redirect(url_for('crud'))
+
+# Rota para adicionar uma palavra
+@app.route('/wlist/add/<string:pal>/<string:cat>/<int:compl>')
+def add(pal,cat,compl):
+    add_palavra(compl,cat,pal)
     return redirect(url_for('crud'))
 
 def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
