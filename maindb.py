@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
 import random
+#import os
 
 # Nome do banco de dados SQLite
 db_name = 'dicionario.db'
@@ -8,7 +9,7 @@ db_name = 'dicionario.db'
 
 app = Flask(__name__)
 
-def open_localdicionario(c):
+def recupera_dados():
     dados = []
 
     # Conectar ao banco de dados SQLite
@@ -16,20 +17,58 @@ def open_localdicionario(c):
     cursor = conn.cursor()
 
     # Executar uma consulta SQL para buscar as palavras da tabela
-    cursor.execute("SELECT complexidade, categoria, palavra FROM dicionario WHERE complexidade=?", (c,))
+    #cursor.execute("SELECT complexidade, categoria, palavra FROM dicionario WHERE complexidade=?", (c,))
+    cursor.execute("SELECT id, complexidade, categoria, palavra FROM dicionario")
     rows = cursor.fetchall()
 
     for row in rows:
-        complexidade, categoria, palavra = row
-        dados.append({'complexidade': complexidade, 'categoria': categoria, 'palavra': palavra})
+        id, complexidade, categoria, palavra = row
+        dados.append({'id':id, 'complexidade': complexidade, 'categoria': categoria, 'palavra': palavra})
 
     # Fechar a conexão com o banco
     conn.close()
 
     return dados
 
-def sortword(cat) :
-    dicionario = open_localdicionario(cat)  # Consultar dicionário no banco de dados
+def add_palavra(complexidade, categoria, palavra):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO dicionario (complexidade, categoria, palavra) VALUES (?, ?, ?)",
+                   (complexidade, categoria, palavra))
+    conn.commit()
+    conn.close()
+
+def remove_palavra(id):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM dicionario WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+
+@app.route('/wlist/crud', methods=['GET', 'POST'])
+def crud():
+    if request.method == 'POST':
+        # Captura dos dados do formulário
+        complexidade = request.form['complexidade']
+        categoria = request.form['categoria']
+        palavra = request.form['palavra']
+        
+        # Adiciona a nova palavra no banco de dados
+        add_palavra(complexidade, categoria, palavra)
+        return redirect(url_for('crud'))  # Redireciona para a mesma página após o POST
+    
+    # Quando for GET, exibe os dados no banco de dados
+    palavras = recupera_dados()
+    return render_template('crud.html', palavras=palavras)
+
+# Rota para remover uma palavra
+@app.route('/wlist/remove/<int:id>')
+def remove(id):
+    remove_palavra(id)
+    return redirect(url_for('crud'))
+
+def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
+    dicionario = recupera_dados()  # Consultar dicionário no banco de dados
     if dicionario:  # Verificar se a lista de palavras não está vazia
         pos = random.randint(0, len(dicionario) - 1)
         palavra_sorteada = dicionario[pos]

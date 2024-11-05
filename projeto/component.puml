@@ -1,0 +1,22 @@
+@startuml
+package "pythonanywhere" {
+
+  node "flask" {
+  
+    [apigetword] 
+    [apigetword] 
+    [apigetword] 
+  
+  }
+
+  database "sqlite3" {
+  } 
+  
+}
+sqlite3 - [apigetword] : conn     
+
+[apigetword] --- get
+[apigetword] -- getfull
+[apigetword] - crud
+
+@enduml
