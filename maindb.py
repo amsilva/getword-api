@@ -9,7 +9,7 @@ db_name = 'dicionario.db'
 
 app = Flask(__name__)
 
-def recupera_dados():
+def recupera_dados(complex):
     dados = []
 
     # Conectar ao banco de dados SQLite
@@ -23,7 +23,8 @@ def recupera_dados():
 
     for row in rows:
         id, complexidade, categoria, palavra = row
-        dados.append({'id':id, 'complexidade': complexidade, 'categoria': categoria, 'palavra': palavra})
+        if complex == 0 or complex == complexidade : #para complex = 0, considera tudo
+            dados.append({'id':id, 'complexidade': complexidade, 'categoria': categoria, 'palavra': palavra})
 
     # Fechar a conexão com o banco
     conn.close()
@@ -54,11 +55,11 @@ def crud():
         palavra = request.form['palavra']
         
         # Adiciona a nova palavra no banco de dados
-        add_palavra(complexidade, categoria, palavra)
+        add_palavra(complexidade.upper(), categoria.upper(), palavra.upper())
         return redirect(url_for('crud'))  # Redireciona para a mesma página após o POST
     
     # Quando for GET, exibe os dados no banco de dados
-    palavras = recupera_dados()
+    palavras = recupera_dados(0)
     return render_template('crud.html', palavras=palavras)
 
 # Rota para remover uma palavra
@@ -68,7 +69,7 @@ def remove(id):
     return redirect(url_for('crud'))
 
 def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
-    dicionario = recupera_dados()  # Consultar dicionário no banco de dados
+    dicionario = recupera_dados(cat)  # Consultar dicionário no banco de dados
     if dicionario:  # Verificar se a lista de palavras não está vazia
         pos = random.randint(0, len(dicionario) - 1)
         palavra_sorteada = dicionario[pos]
@@ -76,21 +77,31 @@ def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
     else:
         return None  # Caso não haja palavras no banco
 
-@app.route('/wlist/get', methods=['GET'])
-def get_simple_message():
-    # Sugerir uma complexidade qualquer (exemplo: 1)
-    novapalavra = sortword(1)
+@app.route('/wlist/get/<int:complex>', methods=['GET'])
+def get_simple_bycomplex(complex):
+    novapalavra = sortword(complex) #repassa a categoria
     if novapalavra:
         return jsonify(palavra=novapalavra['palavra'])
     else:
-        return jsonify(message="Nenhuma palavra encontrada para a complexidade solicitada."), 404
+        return jsonify(message="Nenhuma palavra encontrada!"), 404
 
-@app.route('/wlist/getfull', methods=['GET'])
-def get_complex_message():
-    novapalavra = sortword(1)
-    return jsonify(palavra=novapalavra['palavra'], 
+@app.route('/wlist/get', methods=['GET'])
+def get_simple():
+    return get_simple_bycomplex(0)
+
+@app.route('/wlist/getfull/<int:complex>', methods=['GET'])
+def get_full_bycomplex(complex):
+    novapalavra = sortword(complex)
+    if novapalavra :
+        return jsonify(palavra=novapalavra['palavra'], 
                 categoria=novapalavra['categoria'],
                 complexidade=novapalavra['complexidade'])
+    else:
+        return jsonify(message="Nenhuma palavra encontrada!"), 404
+
+@app.route('/wlist/getfull', methods=['GET'])
+def get_full():
+    return get_full_bycomplex(0)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
