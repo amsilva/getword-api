@@ -6,7 +6,7 @@
     <title>CRUD de Dicionário</title>
     <style>
         body { font-family: Arial; margin: 2px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1px; }
+        table { width: 55%; border-collapse: collapse; margin-top: 1px; }
         th, td { padding: 2px; text-align: left; border: 1px solid #ddd; }
         form { margin-top: 2px; }
     </style>
@@ -17,16 +17,33 @@
 
     <!-- Formulário para adicionar uma palavra -->
     <form action="/wlist/crud" method="POST">
-        <label for="complexidade">Complexidade:</label>
-        <input type="number" id="complexidade" name="complexidade" required>
-        <br><br>
-        <label for="categoria">Categoria:</label>
-        <input type="text" id="categoria" name="categoria" required>
-        <br><br>
+        <!-- Campo Palavra -->
         <label for="palavra">Palavra:</label>
         <input type="text" id="palavra" name="palavra" required>
+    
+        <!-- Campo Categoria -->
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" name="categoria" required>
+            <option value="ANIMAL">ANIMAL</option>
+            <option value="FRUTA">FRUTA</option>
+            <option value="NOME">NOME</option>
+            <option value="PAIS">PAIS</option>
+            <option value="TIME">TIME</option>
+            <option value="VERBO">VERBO</option>
+        </select>
+    
+        <!-- Campo Complexidade -->
+        <label for="complexidade">Complexidade:</label>
+        <select id="complexidade" name="complexidade" required>
+            <option value="1">1 - FÁCIL</option>
+            <option value="2">2 - MÉDIO</option>
+            <option value="3">3 - DIFÍCIL</option>
+        </select>
+    
+        <!-- Botão de Envio -->
+        <button type="submit">ADICIONAR</button>
         <br><br>
-        <button type="submit">Adicionar</button>
+
     </form>
 
     <!-- Exibindo as palavras no banco de dados -->
@@ -34,20 +51,20 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Complexidade</th>
-                <th>Categoria</th>
-                <th>Palavra</th>
-                <th>Ações</th>
+                <th>PALAVRA</th>
+                <th>CATEGORIA</th>
+                <th>COMPLEXIDADE</th>
+                <th>AÇÃO</th>
             </tr>
         </thead>
         <tbody>
             {% for palavra in palavras %}
             <tr>
                 <td>{{ palavra.id }}</td>
-                <td>{{ palavra.complexidade }}</td>
-                <td>{{ palavra.categoria }}</td>
                 <td>{{ palavra.palavra }}</td>
-                <td><a href="{{ url_for('remove', id=palavra.id) }}">Remover</a></td>
+                <td>{{ palavra.categoria }}</td>
+                <td>{{ palavra.complexidade }}</td>
+                <td><a href="{{ url_for('remove', id=palavra.id) }}">remover</a></td>
             </tr>
             {% endfor %}
         </tbody>
