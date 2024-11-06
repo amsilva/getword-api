@@ -1,3 +1,8 @@
 ##extensão VSCode utilizada "REST CLIENT"
 
-GET  https://faccamp.pythonanywhere.com/wlist/get
+GET https://faccamp.pythonanywhere.com/wlist/get
+Content-Type: application/json
+
+GET https://faccamp.pythonanywhere.com/wlist/getfull
+Content-Type: application/json
+

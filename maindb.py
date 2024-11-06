@@ -46,7 +46,7 @@ def remove_palavra(id):
     conn.commit()
     conn.close()
 
-@app.route('/wlist/crud', methods=['GET', 'POST'])
+@app.route('/hangman-api/crud', methods=['GET', 'POST'])
 def crud():
     if request.method == 'POST':
         # Captura dos dados do formulário
@@ -63,19 +63,19 @@ def crud():
     return render_template('crud.html', palavras=palavras)
 
 # Rota para remover uma palavra
-@app.route('/wlist/remove/<int:id>')
+@app.route('/hangman-api/remove/<int:id>')
 def remove(id):
     remove_palavra(id)
     return redirect(url_for('crud'))
 
 # Rota para adicionar uma palavra
-@app.route('/wlist/add/<string:pal>/<string:cat>/<int:compl>')
-def add(pal,cat,compl):
-    add_palavra(compl,cat,pal)
+@app.route('/hangman-api/add/<string:pal>/<string:cat>/<int:compl>')
+def add(pal,cat,complex):
+    add_palavra(complex,cat,pal)
     return redirect(url_for('crud'))
 
-def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
-    dicionario = recupera_dados(cat)  # Consultar dicionário no banco de dados
+def sortword(complex) : # TODO aplicar o filtro 'cat' nesse nivel
+    dicionario = recupera_dados(complex)  # Consultar dicionário no banco de dados
     if dicionario:  # Verificar se a lista de palavras não está vazia
         pos = random.randint(0, len(dicionario) - 1)
         palavra_sorteada = dicionario[pos]
@@ -83,31 +83,57 @@ def sortword(cat) : # TODO aplicar o filtro 'cat' nesse nivel
     else:
         return None  # Caso não haja palavras no banco
 
-@app.route('/wlist/get/<int:complex>', methods=['GET'])
-def get_simple_bycomplex(complex):
+
+
+@app.route('/hangman-api/getword/<int:complex>', methods=['GET'])
+def get_word_bycomplex(complex):
     novapalavra = sortword(complex) #repassa a categoria
     if novapalavra:
         return jsonify(palavra=novapalavra['palavra'])
     else:
         return jsonify(message="Nenhuma palavra encontrada!"), 404
 
-@app.route('/wlist/get', methods=['GET'])
-def get_simple():
-    return get_simple_bycomplex(0)
+@app.route('/hangman-api/getword', methods=['GET'])
+def get_word():
+    return get_word_bycomplex(0) # 0 para desconsiderar a complexidade
 
-@app.route('/wlist/getfull/<int:complex>', methods=['GET'])
-def get_full_bycomplex(complex):
+
+
+
+@app.route('/hangman-api/getdata/<int:complex>', methods=['GET'])
+def get_data_bycomplex(complex):
     novapalavra = sortword(complex)
     if novapalavra :
-        return jsonify(palavra=novapalavra['palavra'], 
-                categoria=novapalavra['categoria'],
-                complexidade=novapalavra['complexidade'])
+        ##return jsonify(palavra=novapalavra['palavra'], 
+        ##               categoria=novapalavra['categoria'],
+        ##               complexidade=novapalavra['complexidade'])
+        return jsonify(novapalavra)
     else:
         return jsonify(message="Nenhuma palavra encontrada!"), 404
 
-@app.route('/wlist/getfull', methods=['GET'])
-def get_full():
-    return get_full_bycomplex(0)
+@app.route('/hangman-api/getdata', methods=['GET'])
+def get_data():
+    return get_data_bycomplex(0) # 0 para desconsiderar a complexidade
+
+
+
+
+
+@app.route('/hangman-api/getlist/<int:complex>', methods=['GET'])
+def get_list_bycomplex(complex):
+    #novapalavra = sortword(complex)
+    listapalavras = recupera_dados(complex)  # Consultar dicionário no banco de dados
+    
+    if listapalavras :
+        return jsonify(listapalavras)
+    else:
+        return jsonify(message="Nenhuma palavra encontrada!"), 404
+
+@app.route('/hangman-api/getlist', methods=['GET'])
+def get_list():
+    return get_list_bycomplex(0) # 0 para desconsiderar a complexidade
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
