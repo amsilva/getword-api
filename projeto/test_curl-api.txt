@@ -1,0 +1,18 @@
+curl http://localhost:5000/hangman-api/getdata
+
+...
+
+curl https://faccamp.pythonanywhere.com/hangman-api/getword
+curl https://faccamp.pythonanywhere.com/hangman-api/getword/1
+
+curl https://faccamp.pythonanywhere.com/hangman-api/getdata
+curl https://faccamp.pythonanywhere.com/hangman-api/getdata/1
+
+curl https://faccamp.pythonanywhere.com/hangman-api/getlist
+curl https://faccamp.pythonanywhere.com/hangman-api/getlist/1
+
+curl https://faccamp.pythonanywhere.com/hangman-api/crud
+curl https://faccamp.pythonanywhere.com/hangman-api/remove/999
+curl https://faccamp.pythonanywhere.com/hangman-api/add/TESTE/TESTE/9
+
+

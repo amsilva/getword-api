@@ -6,7 +6,6 @@ import random
 # Nome do banco de dados SQLite
 db_name = 'dicionario.db'
 
-
 app = Flask(__name__)
 
 def recupera_dados(complex):
@@ -69,25 +68,26 @@ def remove(id):
     return redirect(url_for('crud'))
 
 # Rota para adicionar uma palavra
-@app.route('/hangman-api/add/<string:pal>/<string:cat>/<int:compl>')
+@app.route('/hangman-api/add/<string:pal>/<string:cat>/<int:complex>')
 def add(pal,cat,complex):
     add_palavra(complex,cat,pal)
     return redirect(url_for('crud'))
 
-def sortword(complex) : # TODO aplicar o filtro 'cat' nesse nivel
-    dicionario = recupera_dados(complex)  # Consultar dicionário no banco de dados
-    if dicionario:  # Verificar se a lista de palavras não está vazia
-        pos = random.randint(0, len(dicionario) - 1)
-        palavra_sorteada = dicionario[pos]
+def sortword(listapalavras) : # TODO aplicar o filtro 'cat' nesse nivel
+
+    if listapalavras:  # Verificar se a lista de palavras não está vazia
+        pos = random.randint(0, len(listapalavras) - 1)
+        palavra_sorteada = listapalavras[pos]
         return palavra_sorteada
     else:
         return None  # Caso não haja palavras no banco
 
-
-
 @app.route('/hangman-api/getword/<int:complex>', methods=['GET'])
 def get_word_bycomplex(complex):
-    novapalavra = sortword(complex) #repassa a categoria
+
+    listapalavras = recupera_dados(complex) #repassa a categoria
+    novapalavra = sortword(listapalavras)
+
     if novapalavra:
         return jsonify(palavra=novapalavra['palavra'])
     else:
@@ -97,17 +97,17 @@ def get_word_bycomplex(complex):
 def get_word():
     return get_word_bycomplex(0) # 0 para desconsiderar a complexidade
 
-
-
-
 @app.route('/hangman-api/getdata/<int:complex>', methods=['GET'])
 def get_data_bycomplex(complex):
-    novapalavra = sortword(complex)
+    
+    listapalavras = recupera_dados(complex)
+    novapalavra = sortword(listapalavras)
+
     if novapalavra :
-        ##return jsonify(palavra=novapalavra['palavra'], 
-        ##               categoria=novapalavra['categoria'],
-        ##               complexidade=novapalavra['complexidade'])
-        return jsonify(novapalavra)
+        ## return jsonify(novapalavra) ## para desconsiderar o ID, empacotar os campos individualmente
+        return jsonify(palavra=novapalavra['palavra'], 
+                       categoria=novapalavra['categoria'],
+                       complexidade=novapalavra['complexidade'])
     else:
         return jsonify(message="Nenhuma palavra encontrada!"), 404
 
@@ -115,25 +115,19 @@ def get_data_bycomplex(complex):
 def get_data():
     return get_data_bycomplex(0) # 0 para desconsiderar a complexidade
 
-
-
-
-
 @app.route('/hangman-api/getlist/<int:complex>', methods=['GET'])
 def get_list_bycomplex(complex):
     #novapalavra = sortword(complex)
     listapalavras = recupera_dados(complex)  # Consultar dicionário no banco de dados
     
     if listapalavras :
-        return jsonify(listapalavras)
+        return jsonify(listapalavras) ## para desconsiderar o ID, empacotar os campos individualmente
     else:
         return jsonify(message="Nenhuma palavra encontrada!"), 404
 
 @app.route('/hangman-api/getlist', methods=['GET'])
 def get_list():
     return get_list_bycomplex(0) # 0 para desconsiderar a complexidade
-
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

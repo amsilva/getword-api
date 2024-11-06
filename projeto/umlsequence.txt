@@ -1,0 +1,103 @@
+Tool: https://sequencediagram.org/
+
+
+/hangman-api/getword
+-----------------------------------
+title <background:#yellow>/getword</background> 
+
+participant SeuProjeto
+participant API
+database Base de Dados
+
+SeuProjeto->API:<background:#yellow>/getword</background>
+activate SeuProjeto
+
+API->Base de Dados:SELECT *
+activate API
+
+activate Base de Dados
+
+API<--Base de Dados:[(lista de dados)]
+deactivate Base de Dados
+
+note over API:random
+SeuProjeto<--API:{"palavra":"GOIABA"}
+
+
+/hangman-api/getword/?
+-----------------------------------
+
+title <background:#orange>/getword/?</background> (por complexidade) 
+
+participant SeuProjeto
+participant API
+database Base de Dados
+
+SeuProjeto->API:<background:#orange>/getword/2</background>
+activate SeuProjeto
+
+API->Base de Dados:SELECT *
+activate API
+
+activate Base de Dados
+
+API<--Base de Dados:[(lista de dados)]
+deactivate Base de Dados
+
+note over API:aplica filtro
+note over API:random
+SeuProjeto<--API:{"palavra":"KIWI"}
+
+
+
+/hangman-api/getdata
+-----------------------------------
+
+title <background:#lightgreen>/getdata</background>
+
+participant SeuProjeto
+participant API
+database Base de Dados
+
+SeuProjeto->API:<background:#lightgreen>/getdata</background>
+activate SeuProjeto
+
+API->Base de Dados:SELECT *
+activate API
+
+activate Base de Dados
+
+API<--Base de Dados:lista de dados
+deactivate Base de Dados
+
+note over API:random
+SeuProjeto<--API:{"categoria":"FRUTA",\n "complexidade":2,\n "palavra":"KIWI"}
+
+
+
+/hangman-api/getdata/?
+------------------------------------------------------------
+
+title <background:#lightblue>/getdata/?</background> (por complexidade)
+
+participant SeuProjeto
+participant API
+database Base de Dados
+
+SeuProjeto->API:<background:#lightblue>/getdata/2</background>
+activate SeuProjeto
+
+API->Base de Dados:SELECT *
+activate API
+
+activate Base de Dados
+
+API<--Base de Dados:lista de dados
+deactivate Base de Dados
+
+note over API:random
+SeuProjeto<--API:{"categoria":"FRUTA",\n "complexidade":2,\n "palavra":"MEXERICA"}
+
+
+
+

@@ -1,0 +1,27 @@
+@startuml
+package "pythonanywhere" {
+
+  node "flask/apigetword" {
+  
+    [/hangman] 
+  
+  }
+
+  database "sqlite3" {
+  } 
+  
+}
+sqlite3 - [/hangman] : conn     
+
+[/hangman] --- "/getword"
+[/hangman] --- "/getword/?"
+[/hangman] --- "/getdata"
+[/hangman] --- "/getdata/?"
+[/hangman] --- "/getlist"
+[/hangman] --- "/getlist/?"
+[/hangman] - "/crud"
+[/hangman] -- "/add/?/?/?"
+[/hangman] -- "/remove/?"
+
+
+@enduml
